@@ -1,1 +1,34 @@
-<h1>Hello World! Project ini langsung dibuat di GitHub dan Vercel.</h1>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Generator Joke Lokal</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .box { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
+        button { cursor: pointer; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Joke Bapak-Bapak Hari Ini</h1>
+        <p id="joke-text">Sedang mengambil joke garing...</p>
+        <button onclick="ambilJoke()">Cari Joke Lain</button>
+    </div>
+
+    <script>
+        function ambilJoke() {
+            fetch('LINK_MOCKY_KAMU_DISINI')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('joke-text').innerHTML = 
+                        `<strong>${data.setup}</strong> <br> <em>${data.punchline}</em>`;
+                })
+                .catch(err => {
+                    document.getElementById('joke-text').innerText = "Gagal mengambil data.";
+                });
+        }
+        ambilJoke();
+    </script>
+</body>
+</html>
