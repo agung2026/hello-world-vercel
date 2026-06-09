@@ -2,33 +2,360 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Generator Joke Lokal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Clone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .box { border: 1px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
-        button { cursor: pointer; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; }
+        :root {
+            --bg-main: #131314;
+            --bg-sidebar: #1e1f20;
+            --bg-input: #1e1f20;
+            --bg-hover: #282a2c;
+            --text-main: #e3e3e3;
+            --text-sub: #b4b4b4;
+            --accent-color: #4b90ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Google Sans', 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .recent-title,
+        .sidebar.collapsed .chat-history {
+            display: none;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-btn:hover, .nav-item:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .new-chat-btn {
+            margin-top: 40px;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 25px;
+            color: var(--text-sub);
+            cursor: pointer;
+            width: fit-content;
+        }
+        
+        .sidebar.collapsed .new-chat-btn {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            justify-content: center;
+        }
+
+        .recent-section {
+            flex: 1;
+            margin-top: 30px;
+            overflow-y: auto;
+        }
+
+        .recent-title {
+            font-size: 14px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        .chat-history {
+            list-style: none;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .sidebar-bottom {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #743ad5, #d53a9d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Tampilan Awal (Greeting) */
+        .greeting {
+            margin-top: 50px;
+        }
+
+        .greeting h1 {
+            font-size: 56px;
+            font-weight: 500;
+            background: linear-gradient(45deg, #4285f4, #9b72cb, #d96570);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .greeting h2 {
+            font-size: 56px;
+            color: #444746;
+            font-weight: 500;
+            margin-top: -5px;
+        }
+
+        /* Kotak Input Bawah */
+        .input-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px 30px 20px;
+        }
+
+        .input-box {
+            background-color: var(--bg-input);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            gap: 15px;
+        }
+
+        .input-box textarea {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 16px;
+            resize: none;
+            height: 24px;
+            font-family: inherit;
+        }
+
+        .input-icons {
+            display: flex;
+            gap: 20px;
+            color: var(--text-sub);
+            font-size: 20px;
+        }
+
+        .input-icons i {
+            cursor: pointer;
+        }
+
+        .input-icons i:hover {
+            color: var(--text-main);
+        }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 10px;
+        }
+
+        /* Hide scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c4043;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>Joke Bapak-Bapak Hari Ini</h1>
-        <p id="joke-text">Sedang mengambil joke garing...</p>
-        <button onclick="ambilJoke()">Cari Joke Lain</button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-top">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <button class="new-chat-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span class="nav-text">Chat Baru</span>
+            </button>
+            
+            <div class="recent-section">
+                <p class="recent-title">Terbaru</p>
+                <ul class="chat-history">
+                    <li class="chat-item"><i class="fa-regular fa-message"></i> Membuat UI Keren</li>
+                    <li class="chat-item"><i class="fa-regular fa-message"></i> Apa itu HTML & CSS</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="sidebar-bottom">
+            <div class="nav-item">
+                <i class="fa-regular fa-circle-question"></i>
+                <span class="nav-text">Bantuan</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span class="nav-text">Aktivitas</span>
+            </div>
+            <div class="nav-item">
+                <i class="fa-solid fa-gear"></i>
+                <span class="nav-text">Setelan</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="header">
+            <div class="brand-title">Gemini</div>
+            <div class="user-avatar">U</div>
+        </div>
+
+        <div class="chat-area">
+            <div class="greeting">
+                <h1>Halo, User</h1>
+                <h2>Ada yang bisa saya bantu hari ini?</h2>
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-box">
+                <textarea placeholder="Masukkan perintah di sini..."></textarea>
+                <div class="input-icons">
+                    <i class="fa-regular fa-image" title="Upload Gambar"></i>
+                    <i class="fa-solid fa-microphone" title="Gunakan Suara"></i>
+                    <i class="fa-solid fa-paper-plane" style="color: var(--accent-color);" title="Kirim"></i>
+                </div>
+            </div>
+            <p class="disclaimer">Gemini dapat menampilkan informasi yang tidak akurat, jadi periksa kembali responsnya.</p>
+        </div>
     </div>
 
     <script>
-        function ambilJoke() {
-            fetch('LINK_MOCKY_KAMU_DISINI')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('joke-text').innerHTML = 
-                        `<strong>${data.setup}</strong> <br> <em>${data.punchline}</em>`;
-                })
-                .catch(err => {
-                    document.getElementById('joke-text').innerText = "Gagal mengambil data.";
-                });
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
         }
-        ambilJoke();
+
+        // Otomatis meninggikan textarea saat mengetik banyak teks (opsional)
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+          tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+          tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+          this.style.height = 0;
+          this.style.height = (this.scrollHeight) + "px";
+        }
     </script>
 </body>
 </html>
